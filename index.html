@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <title>Home</title>
 </head>
 <body>
@@ -21,6 +20,26 @@
             <a href="" class="links">Settings</a>
         </ul>
         <button class="signlog">Sign up / Log in</button>
+        <button class="signlog" style="display: none;" id="logout">Log Out</button>
     </nav>
+    
+
+
+
+
+    <div id="authModal" style="display: none;">
+        <div class="modalForm">
+            <button onclick="closeModal()" class="close">×</button>
+            <h2>Sign Up / Log in</h2>
+            <input type="email" id="emailInput" placeholder="Email" class="email">
+            <input type="password" id="passwordInput" placeholder="Password" class="password">
+            <button onclick="handleSignUp()" class="SignUp">Sign Up</button>
+            <button onclick="handleLogIn()" class="LogIn">Log In</button>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="init.js"></script>
+    <script src="app.js"></script>
+    <script src="index.js"></script>
 </body>
 </html>
