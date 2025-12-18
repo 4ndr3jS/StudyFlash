@@ -176,54 +176,59 @@ checkAuth();
 check();
 check2();
 
-const searchInput = document.getElementById('searchInput');
-const dropdownMenu = document.getElementById('dropdownMenu');
-const dropdownItems = document.querySelectorAll('.dropdown-item');
+// Function to initialize a searchable dropdown
+function initSearchableDropdown(inputSelector, menuSelector) {
+    const searchInput = document.querySelector(inputSelector);
+    const dropdownMenu = document.querySelector(menuSelector);
+    const dropdownItems = dropdownMenu.querySelectorAll('.dropdown-item');
 
-searchInput.addEventListener('focus', () => {
-    dropdownMenu.classList.add('show');
-});
+    searchInput.addEventListener('focus', () => {
+        dropdownMenu.classList.add('show');
+    });
 
-searchInput.addEventListener('input', (e) => {
-    const searchTerm = e.target.value.toLowerCase();
-    
-    dropdownItems.forEach(item => {
-        const text = item.textContent.toLowerCase();
-        if(text.includes(searchTerm)) {
-            item.classList.remove('hidden');
-        } else {
-            item.classList.add('hidden');
+    searchInput.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        dropdownItems.forEach(item => {
+            const text = item.textContent.toLowerCase();
+            if(text.includes(searchTerm)) {
+                item.classList.remove('hidden');
+            } else {
+                item.classList.add('hidden');
+            }
+        });
+        if(!dropdownMenu.classList.contains('show')) {
+            dropdownMenu.classList.add('show');
         }
     });
-    
-    if(!dropdownMenu.classList.contains('show')) {
-        dropdownMenu.classList.add('show');
-    }
-});
 
-dropdownItems.forEach(item => {
-    item.addEventListener('click', () => {
-        searchInput.value = item.textContent;
-        dropdownMenu.classList.remove('show');
-        
-        const selectedValue = item.getAttribute('data-value');
-        console.log('Selected:', selectedValue);
-        
+    dropdownItems.forEach(item => {
+        item.addEventListener('click', () => {
+            searchInput.value = item.textContent;
+            dropdownMenu.classList.remove('show');
+            const selectedValue = item.getAttribute('data-value');
+            console.log('Selected:', selectedValue);
+        });
     });
-});
 
+    searchInput.addEventListener('keydown', (e) => {
+        const visibleItems = Array.from(dropdownItems).filter(item => 
+            !item.classList.contains('hidden')
+        );
+        if(e.key === 'Enter' && visibleItems.length > 0) {
+            visibleItems[0].click();
+        }
+    });
+}
+
+// Initialize both dropdowns
+initSearchableDropdown('#searchInputFont', '#dropdownMenu');
+initSearchableDropdown('#searchInputColors', '#dropdownMenuColors');
+
+// Global click handler to close all dropdowns
 document.addEventListener('click', (e) => {
     if(!e.target.closest('.search-dropdown')) {
-        dropdownMenu.classList.remove('show');
-    }
-});
-
-searchInput.addEventListener('keydown', (e) => {
-    const visibleItems = Array.from(dropdownItems).filter(item => 
-        !item.classList.contains('hidden')
-    );
-    
-    if(e.key === 'Enter' && visibleItems.length > 0) {
-        visibleItems[0].click();
+        document.querySelectorAll('.dropdown-menu').forEach(menu => {
+            menu.classList.remove('show');
+        });
     }
 });
