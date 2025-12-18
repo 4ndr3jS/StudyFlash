@@ -27,6 +27,7 @@ nav {
     padding-left: 20px;
     padding-right: 20px;
     justify-self: center;
+    z-index: 1000;
 }
 
 .brand h1 {
@@ -72,6 +73,18 @@ ul .links:hover{
     color: green;
     font-size: 19px;
     transform: translateY(-3px);
+}
+
+.btns{
+    display: flex;
+    align-items: center;
+    gap:10px;
+}
+
+.wlcm{
+    display: none;
+    font-size: 18px;
+    font-weight: 400;
 }
 
 .modalForm{
