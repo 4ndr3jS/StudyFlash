@@ -495,7 +495,7 @@ input:checked + .slider::before{
 .dropdown-container {
     display: flex;
     align-items: center;
-    margin-top: 25px;
+    margin-top: 50px;
 }
 
 .search-dropdown {
