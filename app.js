@@ -1,18 +1,24 @@
 async function signUp(email, password) {
     const { data, error } = await supabase.auth.signUp({
-        email : email,
-        password : password,
-    })
+        email: email,
+        password: password,
+    });
 
     if(error){
         console.error('Error signing up: ', error.message);
-        
+
         if(error.message.includes('already registered') || 
-           error.message.includes('User already registered')) {
+           error.message.includes('User already registered') ||
+           error.message.includes('already been registered')) {
             alert('This email is already registered. Please log in instead.');
         } else {
             alert('Sign up failed: ' + error.message);
         }
+        return false;
+    }
+
+    if(data.user && data.user.identities && data.user.identities.length === 0) {
+        alert('This email is already registered. Please check your email to confirm or try logging in.');
         return false;
     }
 
@@ -150,24 +156,15 @@ async function deleteUserAccount() {
         return false;
     }
 
-    const { error: dbError } = await supabase
-        .from('user_names')
-        .delete()
-        .eq('user_id', user.id);
-
-    if(dbError){
-        console.error('Error deleting user data:', dbError);
-    }
-
-    const { error } = await supabase.auth.admin.deleteUser(user.id);
+    const { data, error} = await supabase.rpc('delete_user')
 
     if(error){
-        alert("Account deletion failed. Please contact support or try again later.");
+        alert("Account deletion failed " + error.message);
         console.error('Error deleting account:', error);
         return false;
     }
 
     console.log('Account deleted successfully');
-    await logOut();
+    await supabase.auth.signOut();
     return true;
 }

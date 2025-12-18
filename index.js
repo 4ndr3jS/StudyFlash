@@ -35,26 +35,8 @@ async function handleSignUp() {
         return;
     }
 
-    const loginAttempt = await supabase.auth.signInWithPassword({
-        email: email,
-        password: password
-    });
-
-    if(loginAttempt.data && loginAttempt.data.user && loginAttempt.data.session) {
-        alert('You already have an account! Logging you in...');
-        closeModal();
-        checkAuth();
-        return;
-    }
-
-    if(loginAttempt.error) {
-        if(loginAttempt.error.message.includes('Invalid login credentials') || 
-           loginAttempt.error.message.includes('Email not confirmed')) {
-            alert('An account with this email already exists. Please use the Log In button with the correct password.');
-            return;
-        }
-    }
     const success = await signUp(email, password);
+    
     if(success){
         alert('Sign up successful! Check your email to confirm your account.');
         closeModal();
