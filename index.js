@@ -1,12 +1,24 @@
-document.querySelector('.signlog').addEventListener('click', () => {
-    document.getElementById('authModal').style.display = 'block';
-});
-
-document.getElementById('authModal').addEventListener('click', (e) => {
-    if(e.target.id === 'authModal'){
-        closeModal();
+function check(){
+    const signlog  = document.querySelector('.signlog');
+    if(!signlog){
+        return;
     }
-});
+    signlog.addEventListener('click', () => {
+        document.getElementById('authModal').style.display = 'block';
+    });
+}
+
+function check2(){
+    const authM = document.getElementById('authModal')
+    if(!authM){
+        return;
+    }
+    authM.addEventListener('click', (e) => {
+        if(e.target.id === 'authModal'){
+            closeModal();
+        }
+    });
+}
 
 function closeModal(){
     document.getElementById('authModal').style.display = 'none';
@@ -61,32 +73,85 @@ async function handleLogIn() {
     }
 }
 
+async function handleNameChange(){
+    const newName = document.getElementById('nameChange').value.trim();
+    const nameExist = await checkNameExist(newName);
+    if(nameExist){
+        alert("This name already exists, please choose a different one.");
+        return;
+    }
+
+    if(!newName){
+        alert("Enter new a name");
+    }
+
+    const success = await updateUserName(newName);
+    if(success){
+        checkAuth();
+    }
+}
+
+async function updateUserName(newName) {
+    const{ data, error } = await supabase.auth.updateUser({
+        data: {display_name: newName}
+    });
+    if(error){
+        alert("Failed to update name: " + error.message);
+    }
+    console.log(newName);
+    return true;
+}
+
 async function checkAuth() {
     const user = await checkUser();
     const signlogButton = document.querySelector('.signlog');
     const welcomeText = document.querySelector('.wlcm');
+    const settings = document.getElementById('settings')
+    const logoutButton = document.getElementById('logout');
+    const nameInput = document.getElementById('nameChange');
     
     if(user && user.email){
-        signlogButton.style.display = 'none';
+        if(signlogButton){
+            signlogButton.style.display = 'none';
+        }
         
-        const userName = user.email.split('@')[0];
-        welcomeText.textContent = `Welcome, ${userName}!`;
-        welcomeText.style.display = 'block';
+        const userName = user.user_metadata?.display_name || user.email.split('@')[0];
         
-        const logoutButton = document.getElementById('logout');
-        logoutButton.style.display = 'block';
-        logoutButton.textContent = 'Log Out';
+        if(welcomeText){
+            welcomeText.textContent = `Welcome, ${userName}!`;
+            welcomeText.style.display = 'block';
+            settings.style.display = 'inline-block'
+        }
         
-        logoutButton.onclick = async () => {
-            await logOut();
-            location.reload();
+        if(nameInput){
+            nameInput.value = userName;
+        }
+        
+        if(logoutButton){
+            logoutButton.style.display = 'block';
+            logoutButton.textContent = 'Log Out';
+            
+            logoutButton.onclick = async () => {
+                await logOut();
+                location.reload();
+            }
         }
     } else {
-        welcomeText.style.display = 'none';
-        signlogButton.style.display = 'block';
-        document.getElementById('logout').style.display = 'none';
+        if(welcomeText){
+            welcomeText.style.display = 'none';
+        }
+        if(signlogButton){
+            signlogButton.style.display = 'block';
+        }
+        if(logoutButton){
+            logoutButton.style.display = 'none';
+        }
+        if(nameInput){
+            nameInput.value = '';
+        }
     }
 }
 
 checkAuth();
-checkAuth();
+check();
+check2();
