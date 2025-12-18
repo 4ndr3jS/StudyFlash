@@ -253,7 +253,7 @@ ul .links:hover{
 
 @media (min-width: 768px) {
     .about{
-        margin: 120px auto;
+        margin: 80px auto;
     }
 
     .about h2{
@@ -276,6 +276,7 @@ ul .links:hover{
     padding-right: 65px;
     width: 1050px;
     justify-self: center;
+    margin-bottom: 50px;
 }
 
 .container2{
@@ -293,7 +294,7 @@ ul .links:hover{
     padding: 10px;
     padding-left: 20px;
     max-width: 300px;
-    box-shadow: 10px 20px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: 8px 16px 16px rgba(0, 0, 0, 0.3);
     transition: 0.3s ease;
 }
 
@@ -304,7 +305,6 @@ ul .links:hover{
 
 .title{
     color: #1f2937;
-    padding-left: 5px;
     padding-bottom: 10px;
     margin-top: 0;
 }
@@ -320,4 +320,16 @@ ul .links:hover{
     margin-bottom: 10px;
     font-family: 'Inter', system-ui, sans-serif;
     margin-top: 0;
+}
+
+.description2{
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 1.05rem;
+    line-height: 1.8;
+    height: 100px;
+    margin-bottom: 10px;
+    margin-top: 0;
+    max-width: 50%;
+    padding-left: 5px;
+    color: #4b5563;
 }
