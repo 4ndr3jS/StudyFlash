@@ -14,13 +14,16 @@
         </div>
         <ul>
             <a href="dashboard.html" class="links">Dashboard</a>
-            <a href="" class="links">Study</a>
+            <a href="study.html" class="links">Study</a>
             <a href="" class="links">Analytics</a>
             <a href="" class="links">Resources</a>
             <a href="" class="links">Settings</a>
         </ul>
-        <button class="signlog">Sign up / Log in</button>
-        <button class="signlog" style="display: none;" id="logout">Log Out</button>
+        <div class="btns">
+            <h1 class="wlcm">Welcome, AndrejStanic3!</h1>
+            <button class="signlog">Sign up / Log in</button>
+            <button class="signlog" style="display: none;" id="logout">Log Out</button>
+        </div>
     </nav>
 
     <section class="about">
@@ -81,7 +84,7 @@
     <div id="authModal" style="display: none;">
         <div class="modalForm">
             <button onclick="closeModal()" class="close">×</button>
-            <h2>Sign Up / Log in</h2>
+            <h2 style="color: #000;">Sign Up / Log in</h2>
             <input type="email" id="emailInput" placeholder="Email" class="email">
             <input type="password" id="passwordInput" placeholder="Password" class="password">
             <button onclick="handleSignUp()" class="SignUp">Sign Up</button>
