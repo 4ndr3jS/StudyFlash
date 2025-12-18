@@ -8,7 +8,7 @@
     <title>Home</title>
 </head>
 <body>
-    <nav>
+    <nav style="transform: translateY(-65px);">
         <div class="brand">
             <h1>StudyFlash</h1>
         </div>
@@ -17,13 +17,34 @@
             <a href="study.html" class="links">Study</a>
             <a href="" class="links">Analytics</a>
             <a href="" class="links">Resources</a>
-            <a href="" class="links">Settings</a>
+            <a href="" id="settings" style="display: none;" class="links">Settings</a>
         </ul>
     </nav>
-
-    <div class="container3">
-
+    <h1 class="title1">Settings</h1>
+    <div class="container1">
+        <div class="container12">
+            <div class="container3">
+                <h1 class="title2">Account</h1>
+                <label>Name:</label><br>
+                <div class="container4">
+                    <input type="text" id="nameChange" placeholder="Your name" class="nameInput">
+                    <button class="nameChange" onclick="handleNameChange()">Change name</button>
+                </div>
+            </div>
+            <div class="container3">
+                <h1 class="title2">Notifications</h1>
+            </div>
+        </div>
+        <div class="container12">
+            <div class="container3">
+                <h1 class="title2">Appearance</h1>
+            </div>
+            <div class="container3">
+                <h1 class="title2">Data managment</h1>
+            </div>
+        </div>
     </div>
+   
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="init.js"></script>
