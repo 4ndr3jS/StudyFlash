@@ -57,7 +57,7 @@ async function handleLogIn() {
 
 async function handleNameChange(){
     const newName = document.getElementById('nameChange').value.trim();
-    const nameExist = await checkNameExist(newName);
+    const nameExist = await checkNameExists(newName);
     if(nameExist){
         alert("This name already exists, please choose a different one.");
         return;

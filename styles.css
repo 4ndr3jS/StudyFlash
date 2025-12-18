@@ -422,6 +422,11 @@ ul .links:hover{
     color: #fff;
     border: 1px solid rgb(110, 120, 139);
     border-radius: 16px;
+    transition: 0.3s ease;
+}
+
+.nameChange:active{
+   background-color: #0d58ad;
 }
 
 .passwordChange{
