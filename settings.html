@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <title>Home</title>
+    <title>Settings</title>
 </head>
 <body>
     <nav style="transform: translateY(-65px);">
@@ -17,7 +17,7 @@
             <a href="study.html" class="links">Study</a>
             <a href="" class="links">Analytics</a>
             <a href="" class="links">Resources</a>
-            <a href="" id="settings" style="display: none;" class="links">Settings</a>
+            <a href="settings.html" id="settings" style="display: none;" class="links">Settings</a>
         </ul>
     </nav>
     <h1 class="title1">Settings</h1>
@@ -30,6 +30,18 @@
                     <input type="text" id="nameChange" placeholder="Your name" class="nameInput">
                     <button class="nameChange" onclick="handleNameChange()">Change name</button>
                 </div>
+                
+                <label style="margin-top: 20px; display: block;">Password:</label><br>
+                <div class="container4">
+                    <input type="password" id="passwordChange" placeholder="New password" class="nameInput">
+                    <button class="passwordChange" onclick="handlePasswordChange()">Change password</button>
+                </div>
+                
+                <label style="margin-top: 20px; display: block;">Delete Account:</label><br>
+                <div class="container4" style="transform: translateY(-10px);">
+                    <p class="description" style="max-width: 375px; margin: 0;">This action is permanent and cannot be undone.</p>
+                    <button class="deleteAccount" onclick="handleDeleteAccount()">Delete Account</button>
+                </div>
             </div>
             <div class="container3">
                 <h1 class="title2">Notifications</h1>
@@ -40,11 +52,10 @@
                 <h1 class="title2">Appearance</h1>
             </div>
             <div class="container3">
-                <h1 class="title2">Data managment</h1>
+                <h1 class="title2">Data management</h1>
             </div>
         </div>
     </div>
-   
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="init.js"></script>
