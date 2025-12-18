@@ -371,6 +371,7 @@ ul .links:hover{
     margin-bottom: 50px;
     padding: 30px;
     padding-left: 45px;
+    padding-bottom: 0;
 }
 
 .title1{
@@ -410,4 +411,37 @@ ul .links:hover{
     align-items: center;
     justify-content: space-between;
     height: 50px;
+}
+
+.nameChange{
+    font-size: 15px;
+    font-family: 'roboto', sans-serif;
+    width: 120px;
+    height: 36px;
+    background-color: #1a6fcf;
+    color: #fff;
+    border: 1px solid rgb(110, 120, 139);
+    border-radius: 16px;
+}
+
+.passwordChange{
+    font-size: 15px;
+    font-family: 'roboto', sans-serif;
+    width: 150px;
+    height: 36px;
+    background-color: #e2800f;
+    color: #fff;
+    border: 1px solid rgb(110, 120, 139);
+    border-radius: 16px;
+}
+
+.deleteAccount{
+    font-size: 15px;
+    font-family: 'roboto', sans-serif;
+    width: 120px;
+    height: 36px;
+    background-color: #dc2626;
+    color: #fff;
+    border: 1px solid #991b1b;
+    border-radius: 16px;
 }
