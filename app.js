@@ -65,7 +65,6 @@ async function checkUser() {
     const { data : { user }, error } = await supabase.auth.getUser();
 
     if(user){
-        console.log('User is logged in', user);
         return user;
     }
     else{
