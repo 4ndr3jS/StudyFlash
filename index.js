@@ -253,6 +253,36 @@ function initDarkMode() {
     });
 }
 
+function initFont(){
+    const fontInput = document.getElementById('searchInputFont');
+    if(!fontInput) return;
+
+    const savedFont = localStorage.getItem('font');
+    if(savedFont) {
+        setTimeout(() => {
+            fontInput.value = savedFont;
+        }, 0);
+        applyFont(savedFont);
+    }
+
+    const dropdownItems = document.querySelectorAll('#dropdownMenu .dropdown-item');
+    dropdownItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const selectedFont = item.getAttribute('data-value');
+            localStorage.setItem('font', selectedFont);
+            applyFont(selectedFont);
+        });
+    });
+}
+
+initSearchableDropdown('#searchInputFont', '#dropdownMenu');
+initFont();
+function applyFont(fontName) {
+    // Apply the font to the body or specific elements
+    document.body.style.fontFamily = fontName;
+}
+
+
 function applyDarkMode(isDark) {
     const containers = document.querySelectorAll('.container3');
     const titles = document.querySelectorAll('.title2');
