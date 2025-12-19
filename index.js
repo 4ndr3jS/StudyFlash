@@ -423,6 +423,8 @@ function applyDarkMode(isDark) {
     const descs = document.querySelectorAll('.description');
     const names = document.querySelectorAll('.name');
     const items = document.querySelectorAll('.item');
+    const conatinerBtns = document.querySelectorAll('.containerBtn');
+    const chatContainer = document.getElementById('chat');
 
     if(isDark) {
         containers.forEach(container => {
@@ -440,6 +442,14 @@ function applyDarkMode(isDark) {
         }
         titles.forEach(title => {
             title.style.color = '#fff'
+        });
+        if(chatContainer){
+            chatContainer.style.background = '#0206178c'
+            chatContainer.style.color = '#fff'
+        }
+        conatinerBtns.forEach(btn => {
+            btn.style.color = '#fff'
+            btn.style.background = '#0206178c';
         });
         Ps.forEach(P => {
             P.style.color = '#fff';
@@ -479,7 +489,10 @@ function applyDarkMode(isDark) {
         titles.forEach(title => {
             title.style.color = '#1f2937';
         });
-        
+        if(chatContainer){
+            chatContainer.style.background = '#e6e8eb'
+            chatContainer.style.color = '#1f2937'
+        }
         if(deleteLabel) {
             deleteLabel.style.color = '#1f2937';
         }
@@ -489,7 +502,10 @@ function applyDarkMode(isDark) {
                 label.style.color = '#1f2937';
             }
         });
-        
+        conatinerBtns.forEach(btn => {
+            btn.style.color = '#1f2937'
+            btn.style.background = '#e6e8eb';
+        });
         descriptions.forEach(desc => {
             desc.style.color = '#4b5563';
         });
