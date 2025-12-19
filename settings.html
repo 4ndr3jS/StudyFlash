@@ -37,7 +37,7 @@
                     <button class="passwordChange" onclick="handlePasswordChange()">Change password</button>
                 </div>
                 
-                <label style="margin-top: 20px; display: block;">Delete Account:</label><br>
+                <label style="margin-top: 20px; display: block;" id="deleteLabel">Delete Account:</label><br>
                 <div class="container4" style="transform: translateY(-10px);">
                     <p class="description" style="max-width: 375px; margin: 0;">This action is permanent and cannot be undone.</p>
                     <button class="deleteAccount" onclick="handleDeleteAccount()">Delete Account</button>
@@ -66,7 +66,7 @@
                             class="search-input" 
                             placeholder="Search or select..."
                             autocomplete="off">
-                        <div id="dropdownMenu" class="dropdown-menu">
+                        <div id="dropdownMenu" class="dropdown-menu" id="dropdown-menu">
                             <div class="dropdown-item" data-value="Inter">Inter</div>
                             <div class="dropdown-item" data-value="Roboto">Roboto</div>
                             <div class="dropdown-item" data-value="Open Sans">Open Sans</div>
@@ -89,7 +89,7 @@
                             class="search-input" 
                             placeholder="Search or select..."
                             autocomplete="off">
-                        <div id="dropdownMenuColors" class="dropdown-menu">
+                        <div id="dropdownMenuColors" class="dropdown-menu" id="dropdown-menu">
                             <div class="dropdown-item" data-value="blue">Blue</div>
                             <div class="dropdown-item" data-value="red">Red</div>
                             <div class="dropdown-item" data-value="yellow">Yellow</div>
