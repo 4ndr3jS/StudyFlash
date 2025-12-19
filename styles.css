@@ -662,8 +662,7 @@ body.dark-mode .nameInput::placeholder {
     margin-top: 50px;
     min-height: 500px;
     width: 1070px;
-    justify-self: left;
-    margin-left: 182px;
+    justify-self: center;
 }
 
 .chatBox{
@@ -674,15 +673,28 @@ body.dark-mode .nameInput::placeholder {
 }
 
 .send1{
+    display: flex;
     background: #1f45cc;
     border: none;
     width: 90px;
     height: 46px;
     border-radius: 6px;
+    align-items: center;
+    justify-content: center;
+    transition: 0.15s ease;
+}
+
+.send1:hover{
+    background: #1c3fbb;
+    cursor: pointer;
+}
+
+.send1:active{
+    background: #152d86;
 }
 
 .send{
-    height: 26px;
+    height: 24px;
     width: auto;
 }
 
@@ -691,6 +703,7 @@ body.dark-mode .nameInput::placeholder {
     align-items: center;
     width: 100%;
     margin-top: 10px;
+    margin-right: 6px;
 }
 
 .chatInput{
@@ -700,6 +713,7 @@ body.dark-mode .nameInput::placeholder {
     height: 44px;
     border-radius: 6px;
     padding-left: 14px;
+    margin-left: 5px;
     color: #fff;
     width: 97%;
 }
@@ -711,4 +725,12 @@ body.dark-mode .nameInput::placeholder {
 .chatInput:focus{
     outline: none;
     border: 1px solid #000000;
+}
+
+.intro{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 420px;
+    width: 100%;
 }
