@@ -509,7 +509,7 @@ input:checked + .slider::before{
     border: 1px solid #091238;
     background-color: #12296f;
     color: #fff;
-    border-radius: 8px;
+    border-radius: 16px;
     font-size: 14px;
     box-sizing: border-box;
 }
@@ -570,4 +570,13 @@ input:checked + .slider::before{
 
 .dropdown-menu::-webkit-scrollbar-thumb:hover {
     background: #2a7ae6;
+}
+
+.dropdown-menu {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.dropdown-menu::-webkit-scrollbar {
+    display: none;
 }
