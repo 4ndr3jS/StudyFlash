@@ -821,6 +821,16 @@ body.dark-mode .nameInput::placeholder {
     align-items: center;
     justify-content: center;
     gap: 10px;
+    transition: 0.2s ease;
+}
+
+.button:hover{
+    cursor: pointer;
+    background-color: #4740cf !important;
+}
+
+.button:active{
+    background-color: #3d37b1 !important;
 }
 
 .button2 {
@@ -834,7 +844,18 @@ body.dark-mode .nameInput::placeholder {
     align-items: center;
     justify-content: center;
     gap: 10px;
+    transition: 0.2s ease;
 }
+
+.button2:hover{
+    cursor: pointer;
+    background-color: #802bcf !important;
+}
+
+.button2:active{
+    background-color: #6f26b4 !important;
+}
+
 .buttons2{
     display: flex;
     align-items: center;
