@@ -672,38 +672,6 @@ async function handleFiles(files){
     displayUploadedFiles();
 }
 
-async function removeFile(index){
-    const file = uploadedFiles[index];
-    
-    if (file.fromDatabase || file.path) {
-        try {
-            const { error: storageError } = await supabase.storage
-                .from('documents')
-                .remove([file.path]);
-            
-            if (storageError) {
-                console.error('Error deleting from storage:', storageError);
-            }
-            
-            if (file.id) {
-                const { error: dbError } = await supabase
-                    .from('uploaded_files')
-                    .delete()
-                    .eq('id', file.id);
-                
-                if (dbError) {
-                    console.error('Error deleting from database:', dbError);
-                }
-            }
-        } catch (err) {
-            console.error('Delete error:', err);
-        }
-    }
-    
-    uploadedFiles.splice(index, 1);
-    displayUploadedFiles();
-}
-
 window.addEventListener('DOMContentLoaded', () => {
     initializeUserFiles();
 });
@@ -812,4 +780,42 @@ function switchTab2(){
     deactivateAllTabs();
     document.getElementById('quiz').style.display = 'block';
     tabs[3].classList.add('active');
+}
+
+const chatInput = document.querySelector(".chatInput");
+const sendBtn = document.getElementById("send");
+const chatBox = document.querySelector(".chatBox");
+
+async function askFlashy(message) {
+    const res = await fetch("https://router.huggingface.co/v1/chat/completions", {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${window.CONFIG.HF_TOKEN}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            model: window.CONFIG.MODEL,
+            messages: [
+                {
+                    role: "system",
+                    content: "You are Flashy, a friendly AI study assistant."
+                },
+                {
+                    role: "user",
+                    content: message
+                }
+            ]
+        })
+    });
+
+    const data = await res.json();
+
+    if(data.choices && data.choices[0]?.message?.content){
+        return data.choices[0].message.content;
+    } else if(data.error) {
+        console.error("HF API Error:", data.error);
+        return "Sorry, I couldn't get a response.";
+    } else {
+        return "Sorry, I couldn't get a response.";
+    }
 }
