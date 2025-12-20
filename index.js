@@ -890,6 +890,9 @@ chatInput.addEventListener("keydown", (e) => {
     if(e.key === "Enter") sendMessage();
 });
 
+const pdfjsLib = window['pdfjs-dist/build/pdf'];
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
 let generatedFlashcards = [];
 let currentCardIndex = 0;
 
@@ -926,7 +929,7 @@ function displayFlashcardFiles() {
         
         fileItem.innerHTML = `
             <div style="display: flex; align-items: center; gap: 10px;">
-                <input type="checkbox" class="file-checkbox" checked data-index="${index}">
+                <input type="checkbox" class="file-checkbox" data-index="${index}">
                 <div style="flex: 1;">
                     <p style="margin: 0; font-size: 14px; font-weight: 500; color: #1f2937;">${file.name}</p>
                     <p style="margin: 0; font-size: 12px; color: #6b7280; margin-top: 4px;">${formatFileSize(file.size)}</p>
@@ -970,12 +973,9 @@ async function generateFlashcards() {
             
             let content;
             
-            // Check if it's a File object (newly uploaded) or database record
             if (file instanceof File || file instanceof Blob) {
-                // Read directly from File object
                 content = await readFileContent(file);
             } else if (file.fromDatabase && file.path) {
-                // Download from Supabase storage
                 content = await downloadFileFromSupabase(file.path);
             } else {
                 throw new Error(`Unable to read file: ${file.name || 'unknown'}`);
@@ -986,32 +986,30 @@ async function generateFlashcards() {
         
         const prompt = `TASK: Generate flashcards as JSON array ONLY.
 
-DO NOT greet me. DO NOT explain. DO NOT add any text before or after the JSON.
-Your ENTIRE response must be ONLY valid JSON array starting with [ and ending with ].
+        CRITICAL INSTRUCTIONS:
+        - Convert any input text written in Cyrillic to Latin script.
+        - Generate flashcards in the SAME LANGUAGE as the source content
+        - DO NOT greet me. DO NOT explain. DO NOT add any text before or after the JSON.
+        - Your ENTIRE response must be ONLY valid JSON array starting with [ and ending with ].
 
-Content to create flashcards from:
-${combinedContent.substring(0, 15000)}
+        Content to create flashcards from:
+        ${combinedContent.substring(0, 12000)}
 
-FORMAT (respond with ONLY this, nothing else):
-[{"front":"question","back":"answer"},{"front":"question","back":"answer"}]
+        FORMAT (respond with ONLY this, nothing else):
+        [{"front":"question","back":"answer"},{"front":"question","back":"answer"}]
 
-Generate 8-12 flashcards now:`;
-
-        const requestBody = {
-            message: prompt,
-            history: [],
-            mode: "flashcard_generation"
-        };
-        
-        console.log("=== SENDING TO API ===");
-        console.log(JSON.stringify(requestBody, null, 2));
+        Generate 8-12 flashcards now:`;
 
         const res = await fetch("https://long-mode-42d3.andrejstanic3.workers.dev/chat", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(requestBody)
+            body: JSON.stringify({
+                message: prompt,
+                history: [],
+                mode: "flashcard_generation"
+            })
         });
 
         const textResponse = await res.text();
@@ -1019,43 +1017,19 @@ Generate 8-12 flashcards now:`;
 
         const data = JSON.parse(textResponse);
 
-        if(data.error){
+        if (data.error) {
             throw new Error(data.error);
         }
 
         const aiResponse = data.response || "";
-        
-        console.log("=== AI RESPONSE START ===");
-        console.log(aiResponse);
-        console.log("=== AI RESPONSE END ===");
 
-        let jsonString = aiResponse;
-        
-        jsonString = jsonString.replace(/```json\s*/g, "").replace(/```\s*/g, "");
-        
-        const arrayMatch = jsonString.match(/\[[\s\S]*\]/);
-        if (arrayMatch) {
-            jsonString = arrayMatch[0];
-        }
-        
-        console.log("=== EXTRACTED JSON START ===");
-        console.log(jsonString);
-        console.log("=== EXTRACTED JSON END ===");
-        
-        if (!jsonString.trim().startsWith('[')) {
-            throw new Error(`AI did not return flashcards. Response was: "${aiResponse.substring(0, 100)}..."`);
-        }
-        
-        generatedFlashcards = JSON.parse(jsonString);
-        
-        if (!Array.isArray(generatedFlashcards) || generatedFlashcards.length === 0) {
-            throw new Error('No flashcards were generated');
-        }
-        
+        const cleanedResponse = aiResponse.replace(/```json|```/g, "").trim();
+        generatedFlashcards = JSON.parse(cleanedResponse);
         currentCardIndex = 0;
 
         displayFlashcardViewer();
-    } catch(error){
+        
+    } catch (error) {
         console.error('Error generating flashcards:', error);
         flashcardContainer.innerHTML = `
             <div class="chatBox">
@@ -1077,6 +1051,27 @@ async function readFileContent(file) {
     });
 }
 
+async function extractTextFromPDF(file) {
+    try {
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        
+        let fullText = '';
+        
+        for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const textContent = await page.getTextContent();
+            const pageText = textContent.items.map(item => item.str).join(' ');
+            fullText += pageText + '\n\n';
+        }
+        
+        return fullText;
+    } catch (error) {
+        console.error('PDF extraction error:', error);
+        throw new Error(`Failed to extract text from PDF: ${error.message}`);
+    }
+}
+
 async function downloadFileFromSupabase(filePath) {
     try {
         const { data, error } = await supabase.storage
@@ -1087,8 +1082,11 @@ async function downloadFileFromSupabase(filePath) {
             console.error('Error downloading file:', error);
             throw new Error(`Failed to download file: ${error.message}`);
         }
-        
-        // Convert blob to text
+
+        if (filePath.toLowerCase().endsWith('.pdf')) {
+            return await extractTextFromPDF(data);
+        }
+
         const text = await data.text();
         return text;
     } catch (error) {
@@ -1136,11 +1134,10 @@ function displayFlashcardViewer(){
             </div>
             
             <div class="buttons2" style="margin-top: 30px;">
-                <button id="prevCard" class="button" ${currentCardIndex === 0 ? 'disabled' : ''}>
+                <button id="prevCard" class="prevCard" ${currentCardIndex === 0 ? 'disabled' : ''}>
                     ← Previous
                 </button>
-                
-                <button id="nextCard" class="button" ${currentCardIndex === generatedFlashcards.length - 1 ? 'disabled' : ''}>
+                <button id="nextCard" class="nextCard" ${currentCardIndex === generatedFlashcards.length - 1 ? 'disabled' : ''}>
                     Next →
                 </button>
             </div>
