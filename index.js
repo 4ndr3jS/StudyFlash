@@ -605,3 +605,219 @@ tabs.forEach( tab => {
 hideAllContents();
 document.getElementById('upload').style.display = 'block';
 tabs[1].classList.add('active');
+
+
+const uploadBox = document.getElementById('uploadBox');
+const fileInput = document.getElementById('fileInput');
+const uploadedFilesContainer = document.getElementById('uploadedFilesContainer');
+const filesList = document.getElementById('filesList');
+let uploadedFiles = [];
+
+uploadBox.addEventListener('click', () => {
+    fileInput.click();
+});
+
+fileInput.addEventListener('change', (e) => {
+    handleFiles(e.target.files);
+});
+
+uploadBox.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadBox.classList.add('dragover');
+});
+
+uploadBox.addEventListener('dragleave', () => {
+    uploadBox.classList.remove('dragover');
+});
+
+uploadBox.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadBox.classList.remove('dragover');
+    handleFiles(e.dataTransfer.files);
+});
+
+let loadedFromDatabase = false;
+
+async function initializeUserFiles() {
+    const files = await loadUserFiles();
+    
+    if (files && files.length > 0) {
+        uploadedFiles = [];
+        
+        files.forEach(fileRecord => {
+            uploadedFiles.push({
+                name: fileRecord.file_name,
+                size: fileRecord.file_size,
+                type: fileRecord.file_type,
+                path: fileRecord.file_path,
+                id: fileRecord.id,
+                fromDatabase: true
+            });
+        });
+        
+        loadedFromDatabase = true;
+        displayUploadedFiles();
+    }
+}
+
+async function handleFiles(files){
+    const allowedFiles = ['.pdf', '.txt', '.doc', '.docx'];
+    for(let file of files){
+        const ext = '.' + file.name.split('.').pop().toLowerCase();
+        if(allowedFiles.includes(ext)){
+            uploadedFiles.push(file);
+            await uploadToSupabase(file);
+        }
+    }
+    displayUploadedFiles();
+}
+
+function displayUploadedFiles(){
+    if(uploadedFiles.length === 0){
+        uploadedFilesContainer.style.display = 'none';
+        return;
+    }
+    uploadedFilesContainer.style.display = 'block';
+    filesList.innerHTML = '';
+
+    uploadedFiles.forEach((file, index) => {
+        const fileItem = document.createElement('div');
+        fileItem.className = 'uploadedFileItem';
+        fileItem.innerHTML = `
+            <div style="display: flex; align-items: center;">
+                <div class="img" style="display: flex; align-self: center; padding-left: 8px; padding-right: 8px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="30" height="30" fill="none">
+                        <rect x="5" y="2" width="14" height="20" rx="2" stroke="#6b7280" stroke-width="2" fill="none"/>
+                        <path d="M13 2V8H19" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <line x1="8" y1="12" x2="16" y2="12" stroke="#6b7280" stroke-width="2" stroke-linecap="round"/>
+                        <line x1="8" y1="16" x2="16" y2="16" stroke="#6b7280" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div class="itemDisplay">
+                    <h3 class="nameFile">
+                        ${index + 1}. ${file.name}
+                    </h3>
+                    <h5 class="fileSize">
+                        ${formatFileSize(file.size)}
+                    </h5>
+                </div>
+            </div>
+            <div class="remove" onclick="removeFile(${index})">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="#6b7280">
+                    <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
+                </svg>
+            </div>
+        `;
+        filesList.appendChild(fileItem);
+    });
+
+    const buttonsDiv = document.createElement('div');
+    buttonsDiv.className = 'btns';
+    buttonsDiv.style.cssText = 'justify-self: center; justify-content: space-between; margin-top: 26px; width: 80%; display: flex;';
+    buttonsDiv.innerHTML = `
+        <div class="buttons2">
+            <button class="button" style="align-items: center;"><img src="brain.png" height="30" width="30">Generate Flashcards</button>
+        </div>
+        <div class="buttons2">
+            <button class="button2"><img src="book.png" height="30" width="30">Generate Quiz</button>
+        </div>
+    `;
+    filesList.appendChild(buttonsDiv);
+}
+
+async function removeFile(index){
+    const file = uploadedFiles[index];
+    
+    if (file.fromDatabase || file.path) {
+        try {
+            const { error: storageError } = await supabase.storage
+                .from('documents')
+                .remove([file.path]);
+            
+            if (storageError) {
+                console.error('Error deleting from storage:', storageError);
+            }
+            
+            if (file.id) {
+                const { error: dbError } = await supabase
+                    .from('uploaded_files')
+                    .delete()
+                    .eq('id', file.id);
+                
+                if (dbError) {
+                    console.error('Error deleting from database:', dbError);
+                }
+            }
+        } catch (err) {
+            console.error('Delete error:', err);
+        }
+    }
+    
+    uploadedFiles.splice(index, 1);
+    displayUploadedFiles();
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    initializeUserFiles();
+});
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+function displayUploadedFiles(){
+    if(uploadedFiles.length === 0){
+        uploadedFilesContainer.style.display = 'none';
+        return;
+    }
+    uploadedFilesContainer.style.display = 'block';
+    filesList.innerHTML = '';
+
+    uploadedFiles.forEach((file, index) => {
+        const fileItem = document.createElement('div');
+        fileItem.className = 'uploadedFileItem';
+        fileItem.innerHTML = `
+            <div style="display: flex; align-items: center;">
+                <div class="img" style="display: flex; align-self: center; padding-left: 8px; padding-right: 8px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="30" height="36">
+                        <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2M18 20H6V4H13V9H18V20M8 12H16V14H8V12M8 16H16V18H8V16Z" 
+                            fill="#645de8"/>
+                    </svg>
+                </div>
+                <div class="itemDisplay">
+                    <h3 class="nameFile">
+                        ${index + 1}. ${file.name}
+                    </h3>
+                    <h5 class="fileSize">
+                        ${formatFileSize(file.size)}
+                    </h5>
+                </div>
+            </div>
+            <div class="remove" onclick="removeFile(${index})">
+                <img src="remove.png" heigth=14 width=14>
+            </div>
+        `;
+        filesList.appendChild(fileItem);
+    });
+    const buttonsDiv = document.createElement('div');
+    buttonsDiv.className = 'btns';
+    buttonsDiv.style.cssText = 'justify-self: center; justify-content: space-between; margin-top: 26px; width: 80%; display: flex;';
+    buttonsDiv.innerHTML = `
+        <div class="buttons2">
+            <button class="button" style="align-items: center; background-color: #4f46e5; color: white;"><img src="brain.png" height="30" width="30">Generate Flashcards</button>
+        </div>
+        <div class="buttons2">
+            <button class="button2" style="background-color: #9333ea; color: white;"><img src="book.png" height="30" width="30">Generate Quiz</button>
+        </div>
+    `;
+    filesList.appendChild(buttonsDiv);
+}
+
+function removeFile(index){
+    uploadedFiles.splice(index, 1);
+    displayUploadedFiles();
+}
