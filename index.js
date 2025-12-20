@@ -603,8 +603,8 @@ tabs.forEach( tab => {
 });
 
 hideAllContents();
-document.getElementById('upload').style.display = 'block';
-tabs[1].classList.add('active');
+document.getElementById('chat').style.display = 'block';
+tabs[0].classList.add('active');
 
 
 const uploadBox = document.getElementById('uploadBox');
@@ -798,7 +798,7 @@ function displayUploadedFiles(){
                 </div>
             </div>
             <div class="remove" onclick="removeFile(${index})">
-                <img src="remove.png" heigth=14 width=14>
+                <img src="imgs/remove.png" heigth=12 width=12>
             </div>
         `;
         filesList.appendChild(fileItem);
@@ -808,16 +808,41 @@ function displayUploadedFiles(){
     buttonsDiv.style.cssText = 'justify-self: center; justify-content: space-between; margin-top: 26px; width: 80%; display: flex;';
     buttonsDiv.innerHTML = `
         <div class="buttons2">
-            <button class="button" style="align-items: center; background-color: #4f46e5; color: white;"><img src="brain.png" height="30" width="30">Generate Flashcards</button>
+            <button class="button" style="align-items: center; background-color: #4f46e5; color: white;"><img src="imgs/brain.png" height="30" width="30">Generate Flashcards</button>
         </div>
         <div class="buttons2">
-            <button class="button2" style="background-color: #9333ea; color: white;"><img src="book.png" height="30" width="30">Generate Quiz</button>
+            <button class="button2" style="background-color: #9333ea; color: white;"><img src="imgs/book.png" height="30" width="30">Generate Quiz</button>
         </div>
     `;
     filesList.appendChild(buttonsDiv);
 }
 
-function removeFile(index){
+async function removeFile(index){
+    const file = uploadedFiles[index];
+    if (file.fromDatabase || file.path) {
+        try {
+            const { error: storageError } = await supabase.storage
+                .from('documents')
+                .remove([file.path]);
+            
+            if (storageError) {
+                console.error('Error deleting from storage:', storageError);
+            }
+
+            if (file.id) {
+                const { error: dbError } = await supabase
+                    .from('uploaded_files')
+                    .delete()
+                    .eq('id', file.id);
+                
+                if (dbError) {
+                    console.error('Error deleting from database:', dbError);
+                }
+            }
+        } catch (err) {
+            console.error('Delete error:', err);
+        }
+    }
     uploadedFiles.splice(index, 1);
     displayUploadedFiles();
 }
