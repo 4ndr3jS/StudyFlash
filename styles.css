@@ -673,13 +673,21 @@ body.dark-mode .nameInput::placeholder {
     transition: 0.2s ease;
 }
 
-.chatBox:hover{
+.chatBox2{
+    min-height: 500px;
+    border: 1px dashed #e6e8eb8c;
+    border-bottom: 1px solid #e6e8eb8c;
+    border-radius: 16px;
+    transition: 0.2s ease;
+}
+
+.chatBox2:hover{
     border-color: #9ca3af;
     background-color: #071236;
     cursor: pointer;
 }
 
-.chatBox:active{
+.chatBox2:active{
     background-color: #050d29;
 }
 
