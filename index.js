@@ -430,6 +430,8 @@ function applyDarkMode(isDark) {
     const button = document.querySelector('.button');
     const button2 = document.querySelector('.button2');
     const listF = document.getElementById('listF');
+    const PercentageEffort = document.getElementById('PercentageEffort');
+    const quizQuestion = document.getElementById('quizQuestion');
 
     if(isDark) {
         containers.forEach(container => {
@@ -454,6 +456,12 @@ function applyDarkMode(isDark) {
         });
         if(listF){
             listF.style.color = '#fff';
+        }
+        if(PercentageEffort){
+            PercentageEffort.style.color = "#fff";
+        }
+        if(quizQuestion){
+            quizQuestion.style.color = "#fff";
         }
         if(button){
             button.style.background = '#4f46e5';
@@ -1378,6 +1386,7 @@ CRITICAL INSTRUCTIONS:
 3. Each question should be open-ended (not multiple choice)
 4. Return ONLY a valid JSON array - no greetings, no explanations, no markdown
 5. Your response must start with [ and end with ]
+6. Do NOT include any text before or after the JSON array
 
 Content from ${fileName}:
 ${sanitizedContent}
@@ -1407,26 +1416,62 @@ Generate exactly 16 quiz questions in this JSON format:
     if (data.error) throw new Error(data.error);
 
     let aiResponse = data.response || "";
+    console.log('Raw AI response:', aiResponse.substring(0, 500));
+    
     aiResponse = aiResponse.replace(/\\\\u([0-9a-fA-F]{4})/g, '\\u$1');
     
     let cleanedResponse = aiResponse.replace(/```json|```/g, "").trim();
+    
     const startIdx = cleanedResponse.indexOf('[');
     const endIdx = cleanedResponse.lastIndexOf(']');
     
-    if (startIdx !== -1 && endIdx !== -1) {
-        cleanedResponse = cleanedResponse.substring(startIdx, endIdx + 1);
+    if (startIdx === -1 || endIdx === -1) {
+        console.error('No JSON array found in response');
+        throw new Error('AI did not return valid JSON format. Please try again.');
     }
     
-    const questions = JSON.parse(cleanedResponse);
-    if (!Array.isArray(questions) || questions.length === 0) {
-        throw new Error('No questions were generated');
-    }
+    cleanedResponse = cleanedResponse.substring(startIdx, endIdx + 1);
+    console.log('Cleaned response:', cleanedResponse.substring(0, 500));
     
-    if (questions.length < 16) {
-        throw new Error(`Only ${questions.length} questions generated, need 16`);
+    try {
+        const questions = JSON.parse(cleanedResponse);
+        if (!Array.isArray(questions) || questions.length === 0) {
+            throw new Error('No questions were generated');
+        }
+        
+        if (questions.length < 16) {
+            throw new Error(`Only ${questions.length} questions generated, need 16`);
+        }
+        
+        return questions.slice(0, 16);
+    } catch (parseError) {
+        console.error('Parse error:', parseError.message);
+        console.error('Problematic JSON:', cleanedResponse.substring(0, 1000));
+
+        try {
+            let fixedResponse = cleanedResponse;
+
+            fixedResponse = fixedResponse.replace(
+                /"(question|correctAnswer)"\s*:\s*"([^"]*(?:[^"\\]"[^"]*)*?)"/g,
+                (match, key, value) => {
+                    const escapedValue = value.replace(/\\"/g, '##ESCAPED##')
+                                              .replace(/"/g, '\\"')
+                                              .replace(/##ESCAPED##/g, '\\"');
+                    return `"${key}":"${escapedValue}"`;
+                }
+            );
+            
+            console.log('Attempting parse with fixed quotes...');
+            const questions = JSON.parse(fixedResponse);
+            if (!Array.isArray(questions) || questions.length === 0) {
+                throw new Error('No questions were generated');
+            }
+            return questions.slice(0, 16);
+        } catch (secondError) {
+            console.error('Second parse failed:', secondError.message);
+            throw new Error('AI response could not be parsed. The AI may not be following instructions. Please try again.');
+        }
     }
-    
-    return questions.slice(0, 16);
 }
 
 async function generateQuiz() {
@@ -1440,7 +1485,7 @@ async function generateQuiz() {
     const fileId = selectedFile.id || selectedFile.name;
     const fileName = selectedFile.name;
     
-    const quizContainer = document.querySelector('#quiz .chatContainer');
+    const quizContainer = document.querySelector('#quiz .quizContainer');
 
     quizContainer.innerHTML = `
         <div class="chatBox" style="display: flex; align-items: center; justify-content: center;">
@@ -1517,3 +1562,229 @@ async function generateQuiz() {
     }
 }
 
+function displayQuizQuestion() {
+    const quizContainer = document.querySelector('#quiz .quizContainer');
+    
+    if (generatedQuiz.length === 0) {
+        quizContainer.innerHTML = '<div class="chatBox"><p style="text-align: center; padding: 20px;">No quiz generated</p></div>';
+        return;
+    }
+
+    const question = generatedQuiz[currentQuestionIndex];
+    const isLastQuestion = currentQuestionIndex === 15;
+
+    quizContainer.innerHTML = `
+        <div class="chatBox" style="padding: 40px;">
+            <div style="margin-bottom: 30px;">
+                <p style="color: #6b7280; font-size: 14px; margin: 0;">Question ${currentQuestionIndex + 1} of 16</p>
+                <div style="width: 100%; background: #e5e7eb; height: 8px; border-radius: 4px; margin-top: 10px;">
+                    <div style="width: ${((currentQuestionIndex + 1) / 16) * 100}%; background: #9333ea; height: 100%; border-radius: 4px; transition: width 0.3s;"></div>
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 30px;">
+                <h3 style="font-size: 20px; font-weight: 500; class="quizQuestion" margin: 0 0 20px 0;">${question.question}</h3>
+                <textarea 
+                    id="quizAnswer" 
+                    placeholder="Type your answer here..."
+                    style="width: 100%; min-height: 120px; padding: 15px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 16px; font-family: inherit; resize: vertical;"
+                >${userAnswers[currentQuestionIndex]}</textarea>
+            </div>
+            
+            <div style="display: flex; gap: 10px; justify-content: space-between;">
+                <button id="prevQuestion" class="prevCard" ${currentQuestionIndex === 0 ? 'disabled' : ''} style="background: #6b7280;">
+                    ← Previous
+                </button>
+                <button id="nextQuestion" class="nextCard" style="background: ${isLastQuestion ? '#10b981' : '#9333ea'};">
+                    ${isLastQuestion ? 'Finish Quiz ✓' : 'Next →'}
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('quizAnswer').addEventListener('input', (e) => {
+        userAnswers[currentQuestionIndex] = e.target.value;
+    });
+    
+    document.getElementById('prevQuestion')?.addEventListener('click', () => {
+        if (currentQuestionIndex > 0) {
+            currentQuestionIndex--;
+            displayQuizQuestion();
+        }
+    });
+    
+    document.getElementById('nextQuestion').addEventListener('click', async () => {
+        userAnswers[currentQuestionIndex] = document.getElementById('quizAnswer').value;
+        
+        if (isLastQuestion) {
+            await finishQuiz();
+        } else {
+            currentQuestionIndex++;
+            displayQuizQuestion();
+        }
+    });
+}
+
+async function verifyAnswer(question, correctAnswer, userAnswer) {
+    if (!userAnswer || userAnswer.trim().length === 0) {
+        return false;
+    }
+
+    const normalizedCorrect = correctAnswer.toLowerCase().trim();
+    const normalizedUser = userAnswer.toLowerCase().trim();
+    
+    if (normalizedUser === normalizedCorrect) {
+        return true;
+    }
+    
+    if (normalizedUser.includes(normalizedCorrect) || normalizedCorrect.includes(normalizedUser)) {
+        return true;
+    }
+
+    const prompt = `You are evaluating a student's answer. Determine if it is correct.
+
+Question: ${question}
+Correct Answer: ${correctAnswer}
+Student's Answer: ${userAnswer}
+
+Is the student's answer correct? Consider:
+- The core meaning matches (exact wording not required)
+- Key concepts are present
+- Minor spelling/grammar errors are acceptable
+- Answers in different languages but with same meaning are correct
+
+Respond with ONLY one word: "correct" or "incorrect" - nothing else.`;
+
+    try {
+        const res = await fetch("https://long-mode-42d3.andrejstanic3.workers.dev/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json; charset=UTF-8" },
+            body: JSON.stringify({
+                message: prompt,
+                history: []
+            })
+        });
+
+        const data = await res.json();
+        const response = (data.response || '').toLowerCase().trim();
+        
+        console.log(`Question: ${question}`);
+        console.log(`Correct: ${correctAnswer}`);
+        console.log(`User: ${userAnswer}`);
+        console.log(`AI says: ${response}`);
+        
+        return response.includes('correct') && !response.includes('incorrect');
+    } catch (error) {
+        console.error('Verification error:', error);
+        const correctWords = normalizedCorrect.split(/\s+/);
+        const userWords = normalizedUser.split(/\s+/);
+        const matchCount = correctWords.filter(word => 
+            userWords.some(userWord => userWord.includes(word) || word.includes(userWord))
+        ).length;
+
+        return matchCount / correctWords.length > 0.5;
+    }
+}
+
+async function finishQuiz() {
+    const quizContainer = document.querySelector('#quiz .quizContainer');
+    
+    quizContainer.innerHTML = `
+        <div class="chatBox" style="display: flex; align-items: center; justify-content: center;">
+            <div style="text-align: center;">
+                <div style="border: 4px solid #f3f4f6; border-top: 4px solid #9333ea; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto;"></div>
+                <p style="margin-top: 20px; color: #6b7280;">Checking your answers...</p>
+            </div>
+        </div>
+    `;
+    
+    let correctCount = 0;
+    
+    for (let i = 0; i < 16; i++) {
+        const isCorrect = await verifyAnswer(
+            generatedQuiz[i].question,
+            generatedQuiz[i].correctAnswer,
+            userAnswers[i]
+        );
+        if (isCorrect) correctCount++;
+    }
+    
+    const percentage = Math.round((correctCount / 16) * 100);
+    
+    quizContainer.innerHTML = `
+        <div class="chatBox" style="display: flex; align-items: center; justify-content: center; min-height: 400px;">
+            <div style="text-align: center; max-width: 500px;">
+                <div style="width: 120px; height: 120px; border-radius: 50%; background: ${percentage >= 70 ? '#10b981' : percentage >= 50 ? '#f59e0b' : '#ef4444'}; display: flex; align-items: center; justify-content: center; margin: 0 auto 30px;">
+                    <span style="font-size: 48px; font-weight: bold; color: white;">${percentage}%</span>
+                </div>
+                
+                <h2 id="PercentageEffort" style="font-size: 32px; margin: 0 0 10px 0;">
+                    ${percentage >= 70 ? 'Great Job! 🎉' : percentage >= 50 ? 'Good Effort! 👍' : 'Keep Practicing! 📚'}
+                </h2>
+                
+                <p style="font-size: 18px; color: #6b7280; margin: 0 0 30px 0;">
+                    You got ${correctCount} out of 16 questions correct
+                </p>
+                
+                <button onclick="resetQuiz()" style="background: #9333ea; color: white; padding: 12px 30px; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; font-weight: 500;">
+                    Try Again
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+function resetQuiz() {
+    currentQuestionIndex = 0;
+    userAnswers = new Array(16).fill('');
+    displayQuizQuestion();
+}
+
+async function saveQuizToSupabase(fileIds, fileNames, questions) {
+    try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return false;
+
+        const sortedFileIds = [...fileIds].sort();
+        
+        const { data: existing } = await supabase.from('quiz_sets').select('id').eq('user_id', user.id);
+        
+        let existingSetId = null;
+        if (existing && existing.length > 0) {
+            for (const set of existing) {
+                const { data: setData } = await supabase.from('quiz_sets').select('file_ids, id').eq('id', set.id).single();
+                if (setData && JSON.stringify([...(setData.file_ids || [])].sort()) === JSON.stringify(sortedFileIds)) {
+                    existingSetId = setData.id;
+                    break;
+                }
+            }
+        }
+        
+        const result = existingSetId
+            ? await supabase.from('quiz_sets').update({ file_names: fileNames, questions, updated_at: new Date().toISOString() }).eq('id', existingSetId).select()
+            : await supabase.from('quiz_sets').insert({ user_id: user.id, file_ids: sortedFileIds, file_names: fileNames, questions }).select();
+
+        return !result.error;
+    } catch (err) {
+        console.error('Save quiz error:', err);
+        return false;
+    }
+}
+
+async function getExistingQuiz(fileIds) {
+    try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return null;
+
+        const sortedFileIds = [...fileIds].sort();
+        const { data } = await supabase.from('quiz_sets').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1);
+
+        if (data && data.length > 0 && JSON.stringify([...data[0].file_ids].sort()) === JSON.stringify(sortedFileIds)) {
+            return data[0].questions;
+        }
+        return null;
+    } catch (err) {
+        console.error('Get quiz error:', err);
+        return null;
+    }
+}
