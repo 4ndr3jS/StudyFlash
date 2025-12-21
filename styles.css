@@ -1051,3 +1051,48 @@ body.dark-mode .nameInput::placeholder {
     justify-self: center;
     height: fit-content;
 }
+
+.welcome-section{
+    margin-top: 100px;
+    height: 150px;
+    background: #0206178c;
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    width: 600px;
+    margin-left: 180px;
+    justify-self: left;
+    margin-bottom: 50px;
+    padding: 30px;
+    padding-left: 45px;
+    padding-bottom: 0;
+}
+
+.welcome-title{
+    margin-top: 0;
+}
+
+.cards{
+    display: flex;
+    flex-direction: column;
+    width: 600px;
+    height: 150px;
+    background: #0206178c;
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    margin-left: 150px;
+    justify-content: center;
+}
+
+.stats1{
+    display: flex;
+    max-width: 1535px;
+    margin-left: 120px;
+}
+
+.name2{
+    font-size: 24px;
+    margin-top: 0;
+    margin-bottom: 50px;
+}
