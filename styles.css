@@ -1083,6 +1083,8 @@ body.dark-mode .nameInput::placeholder {
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
     margin-left: 150px;
     justify-content: center;
+    align-items: center;
+    margin-bottom: 50px;
 }
 
 .stats1{
@@ -1094,5 +1096,46 @@ body.dark-mode .nameInput::placeholder {
 .name2{
     font-size: 24px;
     margin-top: 0;
-    margin-bottom: 50px;
+    transform: translateY(-20px);
+}
+
+.stat{
+    font-size: 20px;
+    transform: translateY(-20px);
+}
+
+.progressContainer{
+    margin-bottom: 25px;
+}
+
+.progressHeader{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.progressLabel{
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.progressValue{
+    color: #fff;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.progress-bar {
+    background: #e5e7eb;
+    border-radius: 10px;
+    height: 12px;
+    overflow: hidden;
+    width: 100%;
+}
+
+.progress-fill {
+    background: linear-gradient(90deg, #4f46e5, #7c3aed);
+    height: 100%;
+    width: 83%;
+    border-radius: 10px;
 }
