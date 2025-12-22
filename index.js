@@ -2305,38 +2305,39 @@ activateTabFromURL();
 
 
 async function loadDailyQuote() {
-    const quoteLabel = document.getElementById('dailyQuote');
-
-    if(!quoteLabel){
-        return;
-    }
+    const quoteEl = document.getElementById('dailyQuote');
+    if (!quoteEl) return;
 
     const today = new Date().toISOString().split('T')[0];
-    const cachedQuote = localStorage.getItem('dailyQuote');
-    const cachedDate = localStorage.getItem('dailyQuoteDate');
+    const cached = JSON.parse(localStorage.getItem('dailyQuoteData'));
 
-    if(cachedDate && cachedQuote === today){
-        quoteLabel.textContent = cachedQuote;
+    if (cached && cached.date === today) {
+        quoteEl.textContent = cached.quote;
         return;
     }
 
-    const prompt  =`
-    Give me ONE short motivational quote for studying.
-    Rules:
-    - Max 1 sentance.
-    - No emojis.
-    - No Author name.
-    - Not too genric.
-    `
-    const response = await askFlashy(prompt);
-    const quote = response.replace(/^["']|["']$/g, '').trim();
-    quoteLabel.textContent = `"${quote}"`;
+    const prompt = `
+Give ONE short motivational quote for studying.
+Rules:
+- One sentence
+- No emojis
+- No author
+`;
 
-    localStorage.setItem('dailyQuote', `"${quote}"`);
-    localStorage.setItem('dailyQuoteDate', today);
+    const response = await askFlashy(prompt);
+
+    const quote = `"${response.replace(/^["']|["']$/g, '').trim()}"`;
+
+    quoteEl.textContent = quote;
+
+    localStorage.setItem(
+        'dailyQuoteData',
+        JSON.stringify({ date: today, quote })
+    );
 }
 
 loadDailyQuote();
+
 
 async function getStudyGoal() {
     const { data : {user}} = await supabase.auth.getUser();
@@ -2357,5 +2358,3 @@ async function getStudyGoal() {
 }
 
 updateProgressBar('progressBar', 'progressValue');
-
-
