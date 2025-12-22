@@ -1,7 +1,7 @@
 const CONFIG = {
-    supabaseUrl: 'SUPABASE URL HERE',
-    supabaseKey: 'service_role KEY HERE',
-    HF_TOKEN: "YOUR API KEY GOES HERE"
+    supabaseUrl: 'https://umxfotxhpuccfriazeei.supabase.co',
+    supabaseKey: 'sb_publishable_-oNRvxugFzt9BQ5y_aib6g_7Ua4HamI',
+    HF_TOKEN: "YOUR API KEY"
 };
 
 window.CONFIG = CONFIG;
