@@ -46,7 +46,10 @@
             <div class="container3">
                 <h1 class="title2">Study time</h1>
                 <label>Time spent learning:</label>
-                <label class="timespent"></label>
+                <div style="position: fixed; bottom: 20px; right: 20px; background: #4f46e5; color: white; padding: 15px 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                    <p style="margin: 0; font-size: 12px; opacity: 0.9;">Session Time</p>
+                    <p id="liveTimer" style="margin: 5px 0 0 0; font-size: 24px; font-weight: 600;">0h 0m 0s</p>
+                </div>
             </div>
         </div>
         <div class="container12">
@@ -102,14 +105,14 @@
             </div>
             <div class="container3">
                 <h1 class="title2">Study time goal</h1>
-                <label class="goalInputLabel">Set a time goal for studying (hours per day):</label>
+                <label class="goalInputLabel">Set a time goal for studying (hours per week):</label>
                 <div class="container4" style="align-items: center; gap: 10px; margin-top: 10px;">
                     <input 
                         type="number" 
                         id="studyGoalInput" 
                         min="1" 
                         max="24" 
-                        placeholder="Hours per day"
+                        placeholder="Hours per week"
                         class="nameInput"
                         style="flex: 1; max-width: 200px;">
                     <button 
@@ -118,7 +121,7 @@
                         Save Goal
                     </button>
                 </div>
-                <div id="currentGoalDisplay" style="display: none; margin-top: 15px; padding: 12px; background: #f0f0f0; border-radius: 5px; font-weight: 500; color: #1f2937;"></div>
+                <div id="currentGoalDisplay" style="display: none; margin-top: 15px; padding: 12px; background: #13286f; border-radius: 5px; font-weight: 500; color: #fff;"></div>
             </div>
         </div>
     </div>
