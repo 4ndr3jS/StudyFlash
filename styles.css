@@ -1052,20 +1052,14 @@ body.dark-mode .nameInput::placeholder {
     height: fit-content;
 }
 
-.welcome-section{
-    margin-top: 100px;
-    height: 150px;
+.welcome-section {
     background: #0206178c;
-    border: none;
     border-radius: 16px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-    width: 600px;
-    margin-left: 180px;
-    justify-self: left;
-    margin-bottom: 50px;
-    padding: 30px;
-    padding-left: 45px;
-    padding-bottom: 0;
+    padding: 30px 30px 0 45px;
+    height: 170px;
+    width: 100%;
+    margin: 0;
 }
 
 .welcome-title{
@@ -1091,6 +1085,7 @@ body.dark-mode .nameInput::placeholder {
     display: flex;
     max-width: 1535px;
     margin-left: 120px;
+    margin-top: 20px;
 }
 
 .name2{
@@ -1138,4 +1133,28 @@ body.dark-mode .nameInput::placeholder {
     height: 100%;
     width: 83%;
     border-radius: 10px;
+}
+
+.two-col-wrapper {
+    display: flex;
+    gap: 20px;
+    max-width: 1000px;
+    margin: 100px auto 0;
+    width: 100%;
+    align-items: stretch;
+}
+
+.quick-action{
+    font-size: 14px;
+    padding-left: 20px;
+    border: 1px dashed #0d1b4b;
+    background-color: #192b64;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    transition: 0.2s ease;
+}
+
+.quick-action:hover{
+    cursor: pointer;
+    background-color: #263b81;
 }
