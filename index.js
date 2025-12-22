@@ -2413,7 +2413,7 @@ async function getStudyGoal() {
         .maybeSingle();
     
     if(error || !data?.hours_per_week){
-        return 1230;
+        return 0;
     }
 
     return data.hours_per_week;
