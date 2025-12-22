@@ -120,7 +120,6 @@ async function checkAuth() {
     const user = await checkUser();
     const signlogButton = document.querySelector('.signlog');
     const welcomeText = document.querySelector('.wlcm');
-    const settings = document.getElementById('settings');
     const logoutButton = document.getElementById('logout');
     const nameInput = document.getElementById('nameChange');
     
@@ -134,10 +133,6 @@ async function checkAuth() {
         if(welcomeText){
             welcomeText.textContent = `Welcome, ${userName}!`;
             welcomeText.style.display = 'block';
-        }
-        
-        if(settings){
-            settings.style.display = 'inline-block';
         }
         
         if(nameInput){
@@ -162,9 +157,6 @@ async function checkAuth() {
         }
         if(logoutButton){
             logoutButton.style.display = 'none';
-        }
-        if(settings){
-            settings.style.display = 'none';
         }
         if(nameInput){
             nameInput.value = '';
@@ -400,15 +392,14 @@ function applyAccentToElements(elements) {
         el.style.border = `1px solid ${accent}`;
         el.style.outline = 'none';
     });
-
-    
 }
 
 
+
 function applyDarkMode(isDark) {
-    const containers = document.querySelectorAll('.container3, .container, .chatContainer, .sideContainer, .quizContainer');
+    const containers = document.querySelectorAll('.container3, .container, .chatContainer, .sideContainer, .quizContainer, .welcome-section, .cards');
     const aboutSection = document.querySelector('.about');
-    const titles = document.querySelectorAll('.title2');
+    const titles = document.querySelectorAll('.title2, .welcome-title, .name2, .titlechart');
     const titles1 = document.querySelectorAll('.title')
     const labels = document.querySelectorAll('.container3 label');
     const descriptions = document.querySelectorAll('.container3 .description');
@@ -432,6 +423,15 @@ function applyDarkMode(isDark) {
     const listF = document.getElementById('listF');
     const PercentageEffort = document.getElementById('PercentageEffort');
     const quizQuestion = document.getElementById('quizQuestion');
+    const session = document.getElementById('specialContainer');
+    const sessionT = document.querySelectorAll('.sessionT');
+    const studyGoalInput = document.getElementById('studyGoalInput');
+    const currentGoalDisplay = document.getElementById('currentGoalDisplay');
+    const progressValue = document.getElementById('progressValue');
+    const progressBar = document.getElementById('progressBar');
+    const welcomeQuote = document.getElementById('dailyQuote');
+    const streak = document.querySelector('.streak-badge');
+    const liveTimer = document.querySelectorAll('.stat');
 
     if(isDark) {
         containers.forEach(container => {
@@ -444,8 +444,15 @@ function applyDarkMode(isDark) {
 
             const aboutH2 = aboutSection.querySelector('h2');
             if(aboutH2){
-                aboutH2.style.color = '#fff'
+                aboutH2.style.color = '#fff';
             }
+        }
+        sessionT.forEach(sessionT =>{
+            sessionT.style.color = "fff";
+        })
+        if(studyGoalInput){
+            studyGoalInput.style.background = "#13286f";
+            studyGoalInput.style.color = '#fff';
         }
         titles.forEach(title => {
             title.style.color = '#fff'
@@ -457,8 +464,33 @@ function applyDarkMode(isDark) {
         if(listF){
             listF.style.color = '#fff';
         }
+        liveTimer.forEach(lt => {
+            lt.style.color = '#fff';
+        });
+        if(streak){
+            streak.style.color = '#fff';
+        }
+        if(progressValue){
+            progressValue.style.color = '#fff';
+        }
+        if(welcomeQuote){
+            welcomeQuote.style.color = '#fff';
+        }
+        if(progressBar){
+            progressBar.style.background = '#fff';
+        }
         if(PercentageEffort){
             PercentageEffort.style.color = "#fff";
+        }
+        if(session){
+            session.style.background = '#4842b4';
+        }
+        if(passwordChange){
+            passwordChange.style.color = '#fff';
+        }
+        if(currentGoalDisplay){
+            currentGoalDisplay.style.background = '#13286f'
+            currentGoalDisplay.style.color = '#fff'
         }
         if(quizQuestion){
             quizQuestion.style.color = "#fff";
@@ -515,6 +547,33 @@ function applyDarkMode(isDark) {
         containers.forEach(container => {
             container.style.background = '#e9edf4';
         });
+        if(streak){
+            streak.style.color = '#000';
+        }
+        if(welcomeQuote){
+            welcomeQuote.style.color = '#000';
+        }
+        if(currentGoalDisplay){
+            currentGoalDisplay.style.background = '#e6e8eb'
+            currentGoalDisplay.style.color = '#000'
+        }
+        liveTimer.forEach(lt => {
+            lt.style.color = '#000';
+        });
+        if(studyGoalInput){
+            studyGoalInput.style.background = "#e6e8eb";
+            studyGoalInput.style.border = '1px solid #aaaaaa';
+            studyGoalInput.style.color = '#000';
+        }
+        sessionT.forEach(sessionT =>{
+            sessionT.style.color = "#1f2937"
+        });
+        if(progressBar){
+            progressBar.style.background = '#878787';
+        }
+        if(progressValue){
+            progressValue.style.color = '#000';
+        }
         titles.forEach(title => {
             title.style.color = '#1f2937';
         });
@@ -526,6 +585,9 @@ function applyDarkMode(isDark) {
         }
         if(listF){
             listF.style.color = '#1f2937';
+        }
+        if(session){
+            session.style.background = '#e6e8eb'
         }
         uploadPs.forEach(p => {
             p.style.color = '#c7c6c4';
@@ -554,7 +616,7 @@ function applyDarkMode(isDark) {
         }
         if(passwordChange) {
             passwordChange.style.backgroundColor = '#e6e8eb';
-            passwordChange.style.color = '#1f2937';
+            passwordChange.style.color = '#000';
             passwordChange.style.border = '1px solid #aaaaaa';
         }
         if(searchInputFont) {
