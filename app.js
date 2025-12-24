@@ -2,14 +2,22 @@ async function signUp(email, password) {
     const { data, error } = await supabase.auth.signUp({
         email: email,
         password: password,
+        options: {
+            emailRedirectTo: 'https://study-flash-m.vercel.app',
+            data: {
+                display_name: email.split('@')[0]
+            }
+        }
     });
 
     if(error){
         console.error('Error signing up: ', error.message);
-
-        if(error.message.includes('already registered') || 
-           error.message.includes('User already registered') ||
-           error.message.includes('already been registered')) {
+        
+        if(error.message.includes('Email rate limit exceeded')) {
+            alert('Too many emails sent. Please wait an hour and try again.');
+        } else if(error.message.includes('confirmation email')) {
+            alert('Could not send confirmation email. Please check your email address or try again later.');
+        } else if(error.message.includes('already registered')) {
             alert('This email is already registered. Please log in instead.');
         } else {
             alert('Sign up failed: ' + error.message);
@@ -23,6 +31,7 @@ async function signUp(email, password) {
     }
 
     console.log('User has signed up: ', data);
+    alert('Sign up successful! Please check your email to confirm your account.');
     return true;
 }
 
