@@ -38,14 +38,23 @@ async function handleSignUp() {
     const success = await signUp(email, password);
     
     if(success){
-        closeModal();
-        logIn(email, password);
+        handleLogIn(email, password);
     }
 }
 
 async function handleLogIn() {
     const email = document.getElementById('emailInput').value;
     const password = document.getElementById('passwordInput').value;
+    
+    const success = await logIn(email, password);
+
+    if(success){
+        closeModal();
+        checkAuth();
+    }
+}
+
+async function handleLogIn2(email, password) {
     
     const success = await logIn(email, password);
 
