@@ -16,7 +16,7 @@ async function signUp(email, password) {
         if(error.message.includes('Email rate limit exceeded')) {
             alert('Too many emails sent. Please wait an hour and try again.');
         } else if(error.message.includes('confirmation email')) {
-            alert('Could not send confirmation email. Please check your email address or try again later.');
+            alert('Could not send confirmation email.Try again later.');
         } else if(error.message.includes('already registered')) {
             alert('This email is already registered. Please log in instead.');
         } else {
@@ -26,12 +26,12 @@ async function signUp(email, password) {
     }
 
     if(data.user && data.user.identities && data.user.identities.length === 0) {
-        alert('This email is already registered. Please check your email to confirm or try logging in.');
+        alert('This email is already registered. Try logging in.');
         return false;
     }
 
     console.log('User has signed up: ', data);
-    alert('Sign up successful! Please check your email to confirm your account.');
+    alert('Sign up successful!');
     return true;
 }
 
