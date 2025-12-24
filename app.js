@@ -15,8 +15,6 @@ async function signUp(email, password) {
         
         if(error.message.includes('Email rate limit exceeded')) {
             alert('Too many emails sent. Please wait an hour and try again.');
-        } else if(error.message.includes('confirmation email')) {
-            alert('Could not send confirmation email.Try again later.');
         } else if(error.message.includes('already registered')) {
             alert('This email is already registered. Please log in instead.');
         } else {
